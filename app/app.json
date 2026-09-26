@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "PhillyPulse",
+    "slug": "phillypulse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "phillypulse",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.owlhacks.phillypulse"
+    },
+    "android": {
+      "package": "com.owlhacks.phillypulse",
+      "adaptiveIcon": {
+        "backgroundColor": "#1D4E9E",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "name": "PhillyPulse",
+      "shortName": "PhillyPulse",
+      "themeColor": "#1D4E9E",
+      "backgroundColor": "#FFF6E5"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1D4E9E",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
