@@ -23,7 +23,7 @@ function Hero({ data, onRefresh, refreshing }: { data?: HomeResponse; onRefresh:
   return (
     <View style={{ height: 330 + insets.top }}>
       <Skyline hour={hour}>
-        <View pointerEvents="box-none" style={[styles.heroText, { paddingTop: insets.top + Spacing.lg }]}>
+        <View style={[styles.heroText, { paddingTop: insets.top + Spacing.lg }]}>
           <Txt variant="label" color={sky.subtext}>
             PhillyPulse · {formatLongDay()}
           </Txt>
@@ -35,7 +35,7 @@ function Hero({ data, onRefresh, refreshing }: { data?: HomeResponse; onRefresh:
               {Math.round(data.weather.temp_f)}° and {data.weather.condition.toLowerCase()} in the city
             </Txt>
           ) : null}
-          <View pointerEvents="box-none" style={styles.heroMeta}>
+          <View style={styles.heroMeta}>
             <DataStatus sources={data?.sources} onDark={sky.text === '#FFFFFF'} />
             {Platform.OS === 'web' ? <RefreshButton onPress={onRefresh} spinning={refreshing} /> : null}
           </View>
@@ -137,6 +137,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   heroText: {
+    pointerEvents: 'box-none',
     width: '100%',
     maxWidth: MaxContentWidth,
     alignSelf: 'center',
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   greeting: { fontSize: 46, lineHeight: 48, maxWidth: 320 },
-  heroMeta: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm },
+  heroMeta: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm, pointerEvents: 'box-none' },
   strip: { gap: Spacing.md, paddingRight: Spacing.lg, paddingVertical: 4 },
   footer: {
     marginTop: Spacing.xxl,

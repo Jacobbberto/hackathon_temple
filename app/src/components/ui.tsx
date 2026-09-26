@@ -39,7 +39,7 @@ export function Card({ children, style, accent }: { children: ReactNode; style?:
     <View
       style={[
         styles.card,
-        { backgroundColor: p.card, borderColor: p.border, shadowColor: p.shadow },
+        { backgroundColor: p.card, borderColor: p.border, boxShadow: `0px 4px 12px ${p.shadow}` },
         accent ? { borderLeftWidth: 5, borderLeftColor: accent } : null,
         style,
       ]}>
@@ -156,10 +156,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     padding: Spacing.lg,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    elevation: 2,
   },
   sectionRow: {
     flexDirection: 'row',

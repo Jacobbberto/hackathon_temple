@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import type { Sources } from '@/api/types';
-import { API_URL } from '@/api/client';
 import { LOADING_LINES } from '@/constants/philly';
 import { Brand, MaxContentWidth, Radius, Spacing, useNativeDriver } from '@/constants/theme';
 import { usePalette } from '@/lib/theme';
@@ -82,7 +81,7 @@ export function PageHeader({ title, tagline, color = Brand.blue, sources, onRefr
 
 function SkylineStrip() {
   return (
-    <View style={styles.strip} pointerEvents="none">
+    <View style={styles.strip}>
       <Svg width="100%" height="100%" viewBox="0 0 400 40" preserveAspectRatio="xMidYMax slice">
         <Path
           d="M0 40V30h10v-6h12v6h8v-8h14v8h10V20h6v-4h4v4h6v10h8v-6h10v6h10V14l3-6 3 6v16h6V4l2-3 2 3v26h8V18h4l2-6 2 6h4v12h10V26h14v4h10v-8h12v8h8V12l10-4v22h6V2h14v28h6V16h12v14h12v-6h10v6h14v-4h10v4h12v-8h14v8h8v-6h12v6h10v10Z"
@@ -187,9 +186,17 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry: () 
       <Txt muted style={{ textAlign: 'center', marginTop: Spacing.sm }}>
         {message}
       </Txt>
-      <Txt variant="small" muted style={{ textAlign: 'center', marginTop: Spacing.xs }}>
-        Start it with `uvicorn main:app` in backend/, or set EXPO_PUBLIC_API_URL. (Looking at {API_URL})
-      </Txt>
+      <View style={styles.howTo}>
+        <Txt variant="label" muted>
+          Start it in another terminal
+        </Txt>
+        <Txt variant="small" style={styles.code}>
+          cd backend{'\n'}source .venv/bin/activate{'\n'}uvicorn main:app --reload --host 0.0.0.0
+        </Txt>
+        <Txt variant="small" muted>
+          First time? Run the setup steps in the README. Deployed backend? Set EXPO_PUBLIC_API_URL.
+        </Txt>
+      </View>
       <Bouncy onPress={onRetry} style={styles.retry}>
         <Txt variant="bold" color="#FFFFFF">
           Try again, bol
@@ -217,7 +224,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   headerMeta: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm, flexWrap: 'wrap' },
-  strip: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 34 },
+  strip: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 34, pointerEvents: 'none' },
   refresh: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -227,6 +234,16 @@ const styles = StyleSheet.create({
   status: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: Radius.pill },
   loading: { alignItems: 'center', paddingVertical: 56, paddingHorizontal: Spacing.xl, gap: Spacing.xs },
   shadow: { width: 80, height: 6, borderRadius: 3, marginTop: Spacing.md, opacity: 0.8 },
+  howTo: { alignSelf: 'stretch', gap: 6, marginTop: Spacing.md, alignItems: 'center' },
+  code: {
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
+    backgroundColor: Brand.ink,
+    color: Brand.goldSoft,
+    padding: Spacing.md,
+    borderRadius: Radius.sm,
+    overflow: 'hidden',
+    lineHeight: 20,
+  },
   retry: {
     marginTop: Spacing.lg,
     backgroundColor: Brand.blue,

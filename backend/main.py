@@ -1,6 +1,6 @@
 """PhillyPulse API: everything happening in Philly today, in four endpoints.
 
-    uvicorn main:app --reload
+    uvicorn main:app --reload --host 0.0.0.0
 """
 
 from __future__ import annotations

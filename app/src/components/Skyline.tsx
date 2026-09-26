@@ -148,9 +148,11 @@ function LoveSculpture({ x, y }: { x: number; y: number }) {
       <SvgText x={x + 3.2} y={y + 6} fontSize={5.5} fontWeight="bold" fill="#FFFFFF">
         L
       </SvgText>
-      <SvgText x={x + 7.2} y={y + 6.4} fontSize={5.5} fontWeight="bold" fill="#FFFFFF" rotation={-18} originX={x + 9} originY={y + 4.5}>
-        O
-      </SvgText>
+      <G transform={`rotate(-18 ${x + 9} ${y + 4.5})`}>
+        <SvgText x={x + 7.2} y={y + 6.4} fontSize={5.5} fontWeight="bold" fill="#FFFFFF">
+          O
+        </SvgText>
+      </G>
       <SvgText x={x + 3} y={y + 11.8} fontSize={5.5} fontWeight="bold" fill="#FFFFFF">
         V
       </SvgText>
@@ -175,7 +177,7 @@ function Twinkle({ children, speed = 1400 }: { children: ReactNode; speed?: numb
     return () => loop.stop();
   }, [v, speed]);
   return (
-    <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: v }]}>
+    <Animated.View style={[StyleSheet.absoluteFill, { opacity: v, pointerEvents: 'none' }]}>
       {children}
     </Animated.View>
   );
@@ -240,7 +242,7 @@ export function Skyline({ hour, children }: Props) {
         <Rect x={left + dw - 1} y={top + 152 * scale} width={left + 1} height={18 * scale} fill={sky.water} />
       </Svg>
 
-      <View pointerEvents="none" style={drawingBox}>
+      <View style={[drawingBox, { pointerEvents: 'none' }]}>
         <Svg width={dw} height={dh} viewBox={`0 0 ${W} ${H}`}>
           {/* sun or moon, off to the east */}
           {sky.night ? (

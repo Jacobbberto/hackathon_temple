@@ -91,7 +91,7 @@ function Confetti({ colors, onDone }: { colors: string[]; onDone: () => void }) 
   }, [progress, done]);
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
       {pieces.map((piece, i) => {
         const start = piece.delay;
         const translateY = progress.interpolate({ inputRange: [0, start, 1], outputRange: [-30, -30, piece.fall] });
@@ -131,7 +131,7 @@ function Toast({ text, onDone }: { text: string; onDone: () => void }) {
   }, [anim, done]);
   const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [40, 0] });
   return (
-    <View pointerEvents="none" style={styles.toastWrap}>
+    <View style={styles.toastWrap}>
       <Animated.View style={[styles.toast, { opacity: anim, transform: [{ translateY }] }]}>
         <Text style={styles.toastText}>{text}</Text>
       </Animated.View>
@@ -186,7 +186,7 @@ function ChantOverlay({
   const sung = tokens.slice(0, Math.min(index, tokens.length - 1));
 
   return (
-    <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.chantWrap, { opacity: fade }]}>
+    <Animated.View style={[StyleSheet.absoluteFill, styles.chantWrap, { opacity: fade }]}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: main, opacity: 0.88 }]} />
       <Text style={[styles.chantTrail, { color: accent }]}>{sung.join(isFinale ? ' · ' : '! ')}</Text>
       <Animated.Text
@@ -201,6 +201,7 @@ function ChantOverlay({
 
 const styles = StyleSheet.create({
   toastWrap: {
+    pointerEvents: 'none',
     position: 'absolute',
     left: 0,
     right: 0,
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
     maxWidth: 460,
   },
   toastText: { color: '#FFFFFF', fontFamily: Fonts.bold, fontSize: 15, textAlign: 'center' },
-  chantWrap: { alignItems: 'center', justifyContent: 'center', padding: 24 },
+  chantWrap: { alignItems: 'center', justifyContent: 'center', padding: 24, pointerEvents: 'none' },
   chantTrail: { fontFamily: Fonts.display, fontSize: 30, letterSpacing: 4, marginBottom: 8, textAlign: 'center' },
   chantMain: {
     fontFamily: Fonts.display,

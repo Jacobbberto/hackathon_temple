@@ -148,16 +148,18 @@ Colors come from the city flag (azure and gold), with each team's colors used wh
 
 ## Getting Started
 
+The backend and the app run side by side, so use two terminals. Start the backend first: the app shows "The backend went down the shore" until it's up.
+
 ### Backend
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # add API keys (all optional)
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0
 ```
 
-The API runs at http://localhost:8000 with interactive docs at `/docs`. Endpoints: `/home`, `/events`, `/sports`, `/politics`.
+`--host 0.0.0.0` lets a phone on the same Wi-Fi reach the backend; without it only your computer can. The API runs on port 8000 with interactive docs at http://localhost:8000/docs. Endpoints: `/home`, `/events`, `/sports`, `/politics`. Next time, just `cd backend && source .venv/bin/activate` and run the `uvicorn` line. Needs Python 3.9 or newer.
 
 No keys are required. Weather (Open-Meteo), news (outlet RSS feeds), sports (ESPN's public scoreboard) and City Council (Legistar) are all keyless. Two sources are optional:
 
@@ -172,13 +174,14 @@ If a source is down, the API serves its last good copy; if it has never answered
 Run the tests with `pip install -r requirements-dev.txt && pytest`.
 
 ### App
+In a second terminal:
 ```bash
 cd app
 npm install
 npx expo start         # press w for web, or scan the QR code with Expo Go
 ```
 
-In development the app finds the backend on the same machine as the Expo dev server (port 8000), so Expo Go on a phone works as long as both are on the same Wi-Fi. For deployed builds set `EXPO_PUBLIC_API_URL`, e.g. `EXPO_PUBLIC_API_URL=https://phillypulse-api.example.com npx expo export --platform web`.
+In development the app looks for the backend on port 8000 of the machine running the Expo dev server, so Expo Go on a phone works as long as the phone is on the same Wi-Fi and the backend was started with `--host 0.0.0.0`. If your firewall asks whether Python may accept incoming connections, allow it. For deployed builds set `EXPO_PUBLIC_API_URL`, e.g. `EXPO_PUBLIC_API_URL=https://phillypulse-api.example.com npx expo export --platform web`.
 
 Checks: `npm run typecheck` and `npm run lint`.
 
