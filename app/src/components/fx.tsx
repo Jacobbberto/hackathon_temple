@@ -35,13 +35,16 @@ export function FxProvider({ children }: { children: ReactNode }) {
   const [toastMsg, setToastMsg] = useState<{ id: number; text: string } | null>(null);
   const [chantState, setChantState] = useState<{ id: number; tokens: string[]; colors: string[] } | null>(null);
 
+  // A counter, not Date.now(): effects often fire in the same millisecond (toast + confetti),
+  // and each new id must remount its overlay to restart the animation.
+  const seq = useRef(0);
   const confetti = useCallback((colors?: string[]) => {
-    setBurst({ id: Date.now(), colors: colors?.length ? colors : PHILLY_COLORS });
+    setBurst({ id: ++seq.current, colors: colors?.length ? colors : PHILLY_COLORS });
   }, []);
-  const toast = useCallback((text: string) => setToastMsg({ id: Date.now(), text }), []);
+  const toast = useCallback((text: string) => setToastMsg({ id: ++seq.current, text }), []);
   const chant = useCallback((teamKey: string, colors: string[]) => {
     const c = TEAM_CHANTS[teamKey] ?? TEAM_CHANTS.eagles;
-    setChantState({ id: Date.now(), tokens: [...c.letters, c.finale], colors });
+    setChantState({ id: ++seq.current, tokens: [...c.letters, c.finale], colors });
   }, []);
 
   const value = useMemo(() => ({ confetti, toast, chant }), [confetti, toast, chant]);
@@ -51,15 +54,15 @@ export function FxProvider({ children }: { children: ReactNode }) {
       {children}
       {chantState ? (
         <ChantOverlay
-          key={chantState.id}
+          key={`chant-${chantState.id}`}
           tokens={chantState.tokens}
           colors={chantState.colors}
           onFinale={() => confetti(chantState.colors.concat('#FFFFFF'))}
           onDone={() => setChantState(null)}
         />
       ) : null}
-      {burst ? <Confetti key={burst.id} colors={burst.colors} onDone={() => setBurst(null)} /> : null}
-      {toastMsg ? <Toast key={toastMsg.id} text={toastMsg.text} onDone={() => setToastMsg(null)} /> : null}
+      {burst ? <Confetti key={`confetti-${burst.id}`} colors={burst.colors} onDone={() => setBurst(null)} /> : null}
+      {toastMsg ? <Toast key={`toast-${toastMsg.id}`} text={toastMsg.text} onDone={() => setToastMsg(null)} /> : null}
     </FxContext.Provider>
   );
 }
