@@ -52,9 +52,10 @@ export function daysBetween(fromDay: string, toDay: string): number {
   return Math.round((dayToDate(toDay).getTime() - dayToDate(fromDay).getTime()) / 86_400_000);
 }
 
-/** "Today", "Tomorrow", or "Thu, Oct 1". */
+/** "Yesterday", "Today", "Tomorrow", or "Thu, Oct 1". */
 export function relativeDay(day: string, today: string = phillyDay()): string {
   const diff = daysBetween(today, day);
+  if (diff === -1) return 'Yesterday';
   if (diff === 0) return 'Today';
   if (diff === 1) return 'Tomorrow';
   return formatDay(day);

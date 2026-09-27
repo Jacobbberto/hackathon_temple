@@ -3,6 +3,7 @@ import {
   Animated,
   Pressable,
   StyleSheet,
+  Switch,
   Text,
   View,
   type PressableProps,
@@ -130,6 +131,60 @@ export function Tag({ label, color, solid }: { label: string; color: string; sol
   );
 }
 
+/** A ▾ that points down when open and right when closed. */
+export function Chevron({ open, color }: { open: boolean; color?: string }) {
+  const p = usePalette();
+  return (
+    <Txt
+      variant="bold"
+      color={color ?? p.textMuted}
+      style={{ fontSize: 14, transform: [{ rotate: open ? '0deg' : '-90deg' }] }}
+      accessibilityElementsHidden
+      importantForAccessibility="no">
+      ▾
+    </Txt>
+  );
+}
+
+/** A labeled on/off switch. */
+export function ToggleRow({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  const p = usePalette();
+  return (
+    <View style={[styles.toggleRow, { backgroundColor: p.card, borderColor: p.border }]}>
+      <View style={{ flex: 1 }}>
+        <Txt variant="bold" style={{ fontSize: 14 }}>
+          {label}
+        </Txt>
+        {hint ? (
+          <Txt variant="small" muted>
+            {hint}
+          </Txt>
+        ) : null}
+      </View>
+      <Switch
+        accessibilityLabel={label}
+        value={value}
+        onValueChange={(v) => {
+          tap();
+          onChange(v);
+        }}
+        trackColor={{ false: p.border, true: '#F5B800' }}
+        thumbColor="#FFFFFF"
+      />
+    </View>
+  );
+}
+
 export function LinkButton({ label, url, color }: { label: string; url: string | null | undefined; color?: string }) {
   const p = usePalette();
   if (!url) return null;
@@ -178,6 +233,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   tagText: { fontFamily: Fonts.bold, fontSize: 11, letterSpacing: 0.6, textTransform: 'uppercase' },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
   linkButton: {
     alignSelf: 'flex-start',
     borderWidth: 1.5,

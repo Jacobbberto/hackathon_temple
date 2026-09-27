@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { usePolitics } from '@/api/hooks';
-import { BillCard, ElectionCountdown, HearingCard } from '@/components/politics';
+import { BillCard, ElectionCountdown, HearingCard, PhillyHistory } from '@/components/politics';
 import { ErrorState, LoadingJawn, PageHeader, Screen } from '@/components/Screen';
 import { Segmented } from '@/components/sports';
 import { Card, SectionTitle, Txt } from '@/components/ui';
@@ -97,6 +97,9 @@ export default function PoliticsScreen() {
               are generated automatically from official titles. Read the official text before you form an opinion.
             </Txt>
           </Card>
+
+          <SectionTitle kicker="Before it was a dashboard" title="Where it all started" />
+          <PhillyHistory />
         </>
       )}
     </Screen>

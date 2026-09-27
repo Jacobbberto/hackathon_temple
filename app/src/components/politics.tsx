@@ -3,13 +3,15 @@ import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 import type { Bill, Election, Hearing } from '@/api/types';
 import { Brand, Fonts, Radius, Spacing, useNativeDriver } from '@/constants/theme';
+import { CIVICS_FACTS, PHILLY_HISTORY } from '@/constants/history';
 import { thump } from '@/lib/haptics';
+import { animateNextLayout } from '@/lib/layout';
 import { openLink } from '@/lib/links';
 import { usePalette } from '@/lib/theme';
 import { formatDay, formatTime, phillyDay, relativeDay } from '@/lib/time';
 import { useFx } from './fx';
 import { LibertyBell } from './icons';
-import { Bouncy, Card, LinkButton, Tag, Txt } from './ui';
+import { Bouncy, Card, Chevron, LinkButton, Tag, Txt } from './ui';
 
 export function ElectionCountdown({ election }: { election: Election }) {
   const fx = useFx();
@@ -189,6 +191,76 @@ export function BillCard({ bill }: { bill: Bill }) {
   );
 }
 
+/** "Philly History 101": a collapsible timeline at the bottom of the Politics tab. */
+export function PhillyHistory() {
+  const p = usePalette();
+  const [open, setOpen] = useState(false);
+  const toggle = () => {
+    animateNextLayout();
+    setOpen((o) => !o);
+  };
+  return (
+    <Card style={{ padding: 0, overflow: 'hidden' }}>
+      <Bouncy
+        onPress={toggle}
+        haptic
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel="Philly History 101"
+        style={[styles.historyHeader, { backgroundColor: p.cardAlt }]}>
+        <Txt style={{ fontSize: 30, lineHeight: 36 }}>📜</Txt>
+        <View style={{ flex: 1 }}>
+          <Txt variant="title" style={{ fontSize: 24, lineHeight: 26 }}>
+            Philly History 101
+          </Txt>
+          <Txt variant="small" muted>
+            {open
+              ? 'From Penn’s grid to the Philly Special.'
+              : `${PHILLY_HISTORY.length} moments from Penn’s grid to the Philly Special. Tap to open.`}
+          </Txt>
+        </View>
+        <Chevron open={open} color={p.accent} />
+      </Bouncy>
+
+      {open ? (
+        <View style={{ padding: Spacing.lg, paddingTop: Spacing.md }}>
+          {PHILLY_HISTORY.map((entry, i) => (
+            <View key={entry.year} style={styles.historyRow}>
+              <View style={styles.historyRail}>
+                <View style={styles.yearBadge}>
+                  <Txt variant="label" color={Brand.ink} style={{ fontSize: 10.5, letterSpacing: 0.5 }}>
+                    {entry.year}
+                  </Txt>
+                </View>
+                {i < PHILLY_HISTORY.length - 1 ? <View style={[styles.historyLine, { backgroundColor: p.border }]} /> : null}
+              </View>
+              <View style={{ flex: 1, paddingBottom: Spacing.lg, gap: 2 }}>
+                <Txt variant="bold">
+                  {entry.emoji} {entry.title}
+                </Txt>
+                <Txt variant="small" muted>
+                  {entry.text}
+                </Txt>
+              </View>
+            </View>
+          ))}
+
+          <View style={[styles.civics, { backgroundColor: p.cardAlt }]}>
+            <Txt variant="label" color={p.accent}>
+              How City Hall works
+            </Txt>
+            {CIVICS_FACTS.map((fact) => (
+              <Txt key={fact} variant="small">
+                • {fact}
+              </Txt>
+            ))}
+          </View>
+        </View>
+      ) : null}
+    </Card>
+  );
+}
+
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
@@ -204,5 +276,18 @@ const styles = StyleSheet.create({
   linkGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   voteLink: { paddingHorizontal: 12, paddingVertical: 9, borderRadius: Radius.pill },
   fullTitle: { borderRadius: Radius.sm, padding: Spacing.md },
+  historyHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, padding: Spacing.lg },
+  historyRow: { flexDirection: 'row', gap: Spacing.md },
+  historyRail: { alignItems: 'center', width: 78 },
+  yearBadge: {
+    backgroundColor: Brand.gold,
+    borderRadius: Radius.pill,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    minWidth: 52,
+    alignItems: 'center',
+  },
+  historyLine: { flex: 1, width: 2, marginVertical: 3 },
+  civics: { borderRadius: Radius.md, padding: Spacing.md, gap: 6 },
   ghost: { borderWidth: 1.5, borderRadius: Radius.pill, paddingHorizontal: 12, paddingVertical: 6 },
 });

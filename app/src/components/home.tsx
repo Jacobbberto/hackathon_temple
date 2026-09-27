@@ -60,6 +60,15 @@ export function WeatherCard({ weather }: { weather: Weather }) {
                 {round(d.low_f)}°
               </Txt>
             </Txt>
+            {d.precip_chance !== null ? (
+              <Txt
+                variant="small"
+                accessibilityLabel={`${d.precip_chance} percent chance of rain`}
+                color={d.precip_chance >= 50 ? '#2F7DE1' : p.textMuted}
+                style={{ fontFamily: d.precip_chance >= 50 ? Fonts.bold : Fonts.body }}>
+                💧 {d.precip_chance}%
+              </Txt>
+            ) : null}
           </View>
         ))}
       </View>

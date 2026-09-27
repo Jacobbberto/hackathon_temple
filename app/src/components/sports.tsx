@@ -5,7 +5,7 @@ import type { Game, Team } from '@/api/types';
 import { Brand, Fonts, Radius, Spacing, useNativeDriver } from '@/constants/theme';
 import { openLink } from '@/lib/links';
 import { usePalette } from '@/lib/theme';
-import { gameTimeLabel } from '@/lib/time';
+import { gameTimeLabel, phillyDay, relativeDay } from '@/lib/time';
 import { useFx } from './fx';
 import { Bouncy, Card, LinkButton, Tag, Txt } from './ui';
 
@@ -135,7 +135,11 @@ export function GameCard({ game }: { game: Game }) {
       </View>
 
       <Txt variant="bold" color={live ? Brand.live : p.text}>
-        {game.state === 'pre' ? gameTimeLabel(game.start_time) : game.detail}
+        {game.state === 'pre'
+          ? gameTimeLabel(game.start_time)
+          : game.state === 'post'
+            ? `${game.detail || 'Final'} · ${relativeDay(phillyDay(new Date(game.start_time)))}`
+            : game.detail}
       </Txt>
       {game.venue ? (
         <Txt variant="small" muted>
@@ -178,10 +182,12 @@ export function TeamPennants({
   teams,
   selected,
   onSelect,
+  chant = true,
 }: {
   teams: Team[];
   selected: string | null;
   onSelect: (key: string | null) => void;
+  chant?: boolean;
 }) {
   const fx = useFx();
   return (
@@ -199,7 +205,7 @@ export function TeamPennants({
                 return;
               }
               onSelect(team.key);
-              fx.chant(team.key, [team.primary, team.secondary]);
+              if (chant) fx.chant(team.key, [team.primary, team.secondary]);
             }}
             style={[styles.pennant, { backgroundColor: team.primary, opacity: dim ? 0.45 : 1 }, active && styles.pennantActive]}>
             <Txt style={{ fontSize: 20, lineHeight: 24 }}>{TEAM_EMOJI[team.key]}</Txt>

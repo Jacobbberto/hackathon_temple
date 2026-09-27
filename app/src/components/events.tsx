@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 
 import type { PulseEvent } from '@/api/types';
 import { Brand, CategoryStyle, Fonts, Radius, Spacing, useNativeDriver } from '@/constants/theme';
 import { cheer } from '@/lib/haptics';
+import { animateNextLayout } from '@/lib/layout';
 import { usePalette } from '@/lib/theme';
-import { daysBetween, formatDay, formatTime, phillyDay, relativeDay } from '@/lib/time';
+import { daysBetween, formatDay, formatTime, formatWeekday, phillyDay, relativeDay } from '@/lib/time';
 import { useFx } from './fx';
-import { Bouncy, Card, LinkButton, Tag, Txt } from './ui';
+import { Bouncy, Card, Chevron, LinkButton, Tag, Txt } from './ui';
 
 function timeLabel(e: PulseEvent): string {
   if (e.ongoing && e.end) return `Through ${formatDay(e.end)}`;
@@ -82,6 +83,131 @@ export function EventCard({ event, showDate }: { event: PulseEvent; showDate?: b
     </Bouncy>
   );
 }
+
+/** One line per event; tap to open the details in place. Used by the Events tab's compact view. */
+export function EventRow({ event, last }: { event: PulseEvent; last?: boolean }) {
+  const p = usePalette();
+  const cat = CategoryStyle[event.category] ?? CategoryStyle.civic;
+  const [open, setOpen] = useState(false);
+  const time = event.all_day || event.ongoing ? 'All day' : formatTime(event.start);
+  return (
+    <View style={[!last && { borderBottomWidth: 1, borderBottomColor: p.border }]}>
+      <Bouncy
+        haptic={false}
+        onPress={() => {
+          animateNextLayout();
+          setOpen((o) => !o);
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        accessibilityLabel={`${event.title}, ${time}${event.closure ? ', street closure' : ''}`}
+        style={styles.compactRow}>
+        <View style={[styles.catDot, { backgroundColor: cat.color }]} />
+        <Txt variant="bold" color={p.accent} style={styles.compactTime} numberOfLines={1}>
+          {time}
+        </Txt>
+        <View style={{ flex: 1 }}>
+          <Txt variant="bold" style={{ fontSize: 14.5 }} numberOfLines={open ? undefined : 1}>
+            {event.title}
+          </Txt>
+          {!open && event.location ? (
+            <Txt variant="small" muted numberOfLines={1}>
+              {event.location}
+            </Txt>
+          ) : null}
+        </View>
+        {event.closure ? <Txt style={{ fontSize: 15, lineHeight: 20 }}>🚧</Txt> : null}
+        <Txt style={{ fontSize: 15, lineHeight: 20 }}>{cat.emoji}</Txt>
+        <Chevron open={open} />
+      </Bouncy>
+      {open ? (
+        <View style={styles.compactDetails}>
+          <Txt variant="small" color={p.accent} style={{ fontFamily: Fonts.bold }}>
+            🕒 {timeLabel(event)}
+          </Txt>
+          {event.location ? (
+            <Txt variant="small" muted>
+              📍 {event.location}
+            </Txt>
+          ) : null}
+          {event.closure ? <ClosureNote text={event.closure} /> : null}
+          {event.description ? <Txt variant="small">{event.description}</Txt> : null}
+          {event.date_note ? (
+            <Txt variant="small" muted style={{ fontStyle: 'italic' }}>
+              {event.date_note}
+            </Txt>
+          ) : null}
+          <View style={styles.row}>
+            <LinkButton label="Details" url={event.url} color={cat.color} />
+            <View style={{ flex: 1 }} />
+            <Txt variant="small" muted>
+              {cat.label} · {event.source}
+            </Txt>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+export type DayChoice = 'all' | 'weekend' | string;
+
+/** Horizontal day picker: All week, Weekend, then one pill per day with its event count. */
+export function DayPicker({
+  days,
+  counts,
+  today,
+  value,
+  onChange,
+}: {
+  days: string[];
+  counts: Record<string, number>;
+  today: string;
+  value: DayChoice;
+  onChange: (value: DayChoice) => void;
+}) {
+  const p = usePalette();
+  const weekendCount = days.filter(isWeekend).reduce((n, d) => n + (counts[d] ?? 0), 0);
+  const total = days.reduce((n, d) => n + (counts[d] ?? 0), 0);
+  const pill = (key: DayChoice, top: string, big: string, count: number) => {
+    const active = value === key;
+    const empty = count === 0;
+    return (
+      <Bouncy
+        key={key}
+        onPress={() => onChange(key)}
+        accessibilityRole="button"
+        accessibilityState={{ selected: active }}
+        accessibilityLabel={`${top} ${big}, ${count} events`}
+        style={[
+          styles.dayPill,
+          { backgroundColor: active ? p.accent : p.card, borderColor: active ? p.accent : p.border },
+          empty && !active && { opacity: 0.5 },
+        ]}>
+        <Txt variant="label" color={active ? p.accentText : p.textMuted} style={{ fontSize: 10 }}>
+          {top}
+        </Txt>
+        <Txt variant="title" color={active ? p.accentText : p.text} style={{ fontSize: 22, lineHeight: 24 }}>
+          {big}
+        </Txt>
+        <View style={[styles.countBadge, { backgroundColor: active ? Brand.gold : p.chip }]}>
+          <Txt variant="label" color={Brand.ink} style={{ fontSize: 9.5, letterSpacing: 0.3 }}>
+            {count}
+          </Txt>
+        </View>
+      </Bouncy>
+    );
+  };
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dayStrip}>
+      {pill('all', 'All', 'Week', total)}
+      {pill('weekend', 'Sat–Sun', 'Wknd', weekendCount)}
+      {days.map((d) => pill(d, d === today ? 'Today' : formatWeekday(d), String(Number(d.slice(8, 10))), counts[d] ?? 0))}
+    </ScrollView>
+  );
+}
+
+export const isWeekend = (day: string) => ['Sat', 'Sun'].includes(formatWeekday(day));
 
 /** Compact row for "On the horizon": a big date block and a countdown. */
 export function HorizonRow({ event }: { event: PulseEvent }) {
@@ -198,6 +324,26 @@ export function RockySteps({ message }: { message: string }) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  compactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+  },
+  compactTime: { width: 64, fontSize: 13 },
+  compactDetails: { gap: 6, paddingHorizontal: Spacing.md, paddingBottom: Spacing.md, paddingLeft: 34 },
+  catDot: { width: 8, height: 8, borderRadius: 4 },
+  dayStrip: { gap: Spacing.sm, paddingBottom: Spacing.md, paddingRight: Spacing.lg },
+  dayPill: {
+    width: 62,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    paddingVertical: 6,
+    gap: 2,
+  },
+  countBadge: { minWidth: 22, alignItems: 'center', borderRadius: Radius.pill, paddingHorizontal: 5, paddingVertical: 1 },
   closure: {
     flexDirection: 'row',
     backgroundColor: '#FFE8D6',

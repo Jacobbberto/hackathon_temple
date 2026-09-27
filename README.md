@@ -113,10 +113,11 @@ The data is serious; the app doesn't have to be. Everything below is built in (n
 
 - **A living skyline.** The Home header is an illustrated view from the Schuylkill: rowhomes with colored doors, the LOVE statue, traffic cones, City Hall with Billy Penn on top, One & Two Liberty, the Comcast towers, and Boathouse Row. The sky follows Philly time (dawn, day, sunset, night), windows light up after dark, and Boathouse Row's outline lights twinkle.
 - **Dress up Billy Penn.** Tap the statue on City Hall to put him in each team's jersey, the way the city does during playoff runs. Keep tapping for a nod to the Curse of Billy Penn.
-- **Stadium chants.** The **GO BIRDS** button spells out E! A! G! L! E! S! full screen, then drops confetti in midnight green. Every team pennant on the Sports tab has its own chant (Ring the Bell, Trust the Process, DOOP...).
+- **Stadium chants.** The **GO BIRDS** button spells out E! A! G! L! E! S! full screen, then drops confetti in midnight green. Every team pennant on the Sports tab has its own chant (Ring the Bell, Trust the Process, DOOP...). Not in the mood? The **Team chants** switch makes the pennants filter quietly, and the app remembers your choice.
 - **Weather in the local dialect,** plus a scientifically calibrated **Wooder Ice Index**.
 - **Jawn of the Day:** a flip card that teaches one piece of Philly slang a day (jawn, wooder, jimmies, drawlin', SKOO-kul...).
 - **Ring the Liberty Bell** on the Politics tab to see the election countdown. Don't ring it too hard.
+- **Philly History 101:** a collapsible timeline at the bottom of the Politics tab, from Penn's 1682 street grid to the Philly Special, plus a quick guide to how City Hall works.
 - **Run the Rocky Steps.** When a filter comes up empty, tap your way up all 72 steps.
 - **Hazard-stripe closure notes,** a bouncing cheesesteak loader, and a backend that "went down the shore" when it's unreachable.
 

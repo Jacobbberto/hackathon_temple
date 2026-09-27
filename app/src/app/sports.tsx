@@ -6,9 +6,10 @@ import type { Game } from '@/api/types';
 import { useFx } from '@/components/fx';
 import { ErrorState, LoadingJawn, PageHeader, Screen } from '@/components/Screen';
 import { GameCard, Segmented, TeamPennants } from '@/components/sports';
-import { Bouncy, Card, Txt } from '@/components/ui';
+import { Bouncy, Card, ToggleRow, Txt } from '@/components/ui';
 import { EMPTY_LINES } from '@/constants/philly';
 import { Brand, Spacing } from '@/constants/theme';
+import { usePreference } from '@/lib/prefs';
 
 type View_ = 'live' | 'upcoming' | 'recent';
 
@@ -32,6 +33,7 @@ export default function SportsScreen() {
   const { data, isPending, isError, error, refetch, isRefetching } = useSports();
   const [team, setTeam] = useState<string | null>(null);
   const [picked, setPicked] = useState<View_ | null>(null);
+  const [chants, setChants] = usePreference('teamChants', true);
 
   const byTeam = (games: Game[]) => games.filter((g) => !team || g.team === team);
   const live = byTeam(data?.live ?? []);
@@ -62,11 +64,20 @@ export default function SportsScreen() {
       ) : (
         <>
           <View style={{ marginTop: Spacing.md }}>
-            <TeamPennants teams={data.teams} selected={team} onSelect={setTeam} />
+            <TeamPennants teams={data.teams} selected={team} onSelect={setTeam} chant={chants} />
           </View>
-          <Txt variant="small" muted style={{ marginBottom: Spacing.md }}>
-            Tap a pennant to filter (and start the chant). Live scores refresh every minute.
-          </Txt>
+          <View style={{ marginBottom: Spacing.md }}>
+            <ToggleRow
+              label="📣 Team chants"
+              hint={
+                chants
+                  ? 'Tapping a pennant filters and starts that team’s chant.'
+                  : 'Pennants just filter. No chants or confetti.'
+              }
+              value={chants}
+              onChange={setChants}
+            />
+          </View>
           <Segmented
             value={view}
             onChange={setPicked}
@@ -76,6 +87,11 @@ export default function SportsScreen() {
               { key: 'recent', label: 'Recent', count: recent.length },
             ]}
           />
+          {view === 'live' ? (
+            <Txt variant="small" muted style={{ marginTop: Spacing.sm }}>
+              Live scores refresh every minute.
+            </Txt>
+          ) : null}
           <View style={{ gap: Spacing.md, marginTop: Spacing.lg }}>
             {games.length ? (
               games.map((g) => <GameCard key={g.id} game={g} />)
