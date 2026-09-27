@@ -210,6 +210,4 @@ app/
 
 ## Team
 
-- Name — role
-- Name — role
-- Name — role
+- Jacob
